@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Steve from Minecraft</title>
+    <link href="./style.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+    <div id="container">
+        <canvas id="canvas"></canvas>
+        <div id="instructions">
+            <ul>
+                <li>Use the , and . key to rotate the entire robot.</li>
+                <li>Use the w and e keys to rotate the head.</li>
+                <li>Use the a and s keys to rotate the left arm.</li>
+                <li>Use the d and f keys to rotate the right arm.</li>
+                <li>Use the z and x keys to rotate the left leg.</li>
+                <li>Use the c and v keys to rotate the right leg.</li>
+                <li>Use spacebar to toggle the walking animation.</li>
+                <li>Use the r key to reset the robot.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+
+<script id="vertex-shader" type="x-shader/x-vertex">
+attribute vec3 a_position;
+attribute vec3 a_normal;
+
+uniform vec3 u_Color;
+uniform mat4 u_ModelViewMatrix;
+uniform mat4 u_NormalMatrix;
+uniform mat4 u_ModelViewProjMatrix;
+
+varying vec3 v_Color;
+
+void main() {
+    vec4 eyeCoord = u_ModelViewMatrix * vec4(a_position, 1);
+    vec3 viewDir = normalize(-eyeCoord.xyz);
+    vec3 normal = normalize(mat3(u_NormalMatrix) * a_normal);
+    v_Color = u_Color * max(dot(viewDir, normal), 0.0);
+    
+    gl_Position = u_ModelViewProjMatrix * vec4(a_position, 1);
+}
+</script>
+<script id="fragment-shader" type="x-shader/x-fragment">
+precision mediump float;
+
+varying vec3 v_Color;
+
+void main() {
+    gl_FragColor = vec4(v_Color, 1);
+}
+</script>
+
+<script src="./scripts/twgl-full.js"></script>
+<script src="./scripts/trackball.js"></script>
+<script src="./scripts/matrixstack.js"></script>
+<script src="./scripts/app.js"></script>
+
+</html>
