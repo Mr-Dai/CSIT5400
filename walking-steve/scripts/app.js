@@ -6,7 +6,7 @@ const sizeBlock = 3;
 
 const scale = {
     head: [8, 8, 8],
-    torso: [8, 12, 4],
+    torso: [8.01, 12, 4], // Make torso slighting wider to hide rotated leg
     arm: [4, 12, 4],
     leg: [4, 12, 4],
     eye: [1, 1, 0.3],
@@ -40,9 +40,8 @@ const angle = {
 
 const animation = {
     isAnimating: false,
-    step: 0.1,
-    current: 0,
-    delta: 0.125
+    startTime: 0,
+    duration: 750
 }
 
 var gl;
@@ -184,8 +183,7 @@ function initKeyEvents() {
                 angle.rightLeg = 0;
                 angle.torso = 0;
                 animation.isAnimating = !animation.isAnimating;
-                animation.current = 0;
-                animation.delta = animation.step;
+                animation.startTime = Date.now();
                 break;
         }
     });
@@ -272,7 +270,7 @@ function renderRobot() {
     // Left leg
     matrixstack.push();
     matrixstack.multiply(m4.rotationX(angle.leftLeg * Math.PI / 180));
-    matrixstack.multiply(m4.translation([sizeBlock * (scale.torso[0] / 2 - scale.leg[0] / 2), -scale.torso[1] * sizeBlock, 0]));
+    matrixstack.multiply(m4.translation([sizeBlock * scale.leg[0] / 2, -scale.torso[1] * sizeBlock, 0]));
     drawComponent(scale.leg, color.leg);
     matrixstack.pop();
 
@@ -280,7 +278,7 @@ function renderRobot() {
     // Right leg
     matrixstack.push();
     matrixstack.multiply(m4.rotationX(angle.rightLeg * Math.PI / 180));
-    matrixstack.multiply(m4.translation([-1 * sizeBlock * (scale.torso[0] / 2 - scale.leg[0] / 2), -scale.torso[1] * sizeBlock, 0]));
+    matrixstack.multiply(m4.translation([-1 * sizeBlock * scale.leg[0] / 2, -scale.torso[1] * sizeBlock, 0]));
     drawComponent(scale.leg, color.leg);
     matrixstack.pop();
 
@@ -323,25 +321,31 @@ function renderRobot() {
     matrixstack.pop();
 }
 
+function zigZag(x, maxX, maxYAbs) {
+    if (x >= maxX / 2) {
+        maxX /= 2;
+        x -= maxX;
+        if (x >= maxX / 2)
+            return -2 * maxYAbs * (maxX - x) / maxX;
+        return -2 * maxYAbs * x / maxX;
+    } else {
+        maxX /= 2;
+        if (x >= maxX / 2)
+            return 2 * maxYAbs * (maxX - x) / maxX;
+        return 2 * maxYAbs * x / maxX;
+    }
+}
+
 function render() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    maximizeCanvas(gl);
 
     // Change angle when animation is turned on
     if (animation.isAnimating) {
-        animation.current += animation.delta;
-        if (animation.current >= 1) {
-            animation.current = 1;
-            animation.delta = -animation.step;
-        } else if (animation.current <= -1) {
-            animation.current = -1;
-            animation.delta = animation.step;
-        }
-
-        angle.leftArm -= maxAngle.arm * animation.delta;
-        angle.rightArm += maxAngle.arm * animation.delta;
-        angle.leftLeg += maxAngle.leg * animation.delta;
-        angle.rightLeg -= maxAngle.leg * animation.delta;
+        const x = (Date.now() - animation.startTime) % animation.duration;
+        angle.leftArm = -1 * zigZag(x, animation.duration, maxAngle.arm);
+        angle.rightArm = zigZag(x, animation.duration, maxAngle.arm);
+        angle.leftLeg = zigZag(x, animation.duration, maxAngle.leg);
+        angle.rightLeg = -1 * zigZag(x, animation.duration, maxAngle.arm);
     }
 
     renderRobot();    
@@ -350,10 +354,13 @@ function render() {
 
 function setUpWebGL(canvasID, vertexShaderID, fragementShaderID) {
     // Get the WebGL context
-    gl = twgl.getWebGLContext(document.getElementById(canvasID));
 
     // Initialize the WebGL environment
+    gl = twgl.getWebGLContext(document.getElementById(canvasID));
     if (gl) {
+        maximizeCanvas(gl);
+        document.body.onresize = () => maximizeCanvas(gl);
+
         gl.clearColor(0, 0, 0, 1);
 
         gl.enable(gl.DEPTH_TEST);
