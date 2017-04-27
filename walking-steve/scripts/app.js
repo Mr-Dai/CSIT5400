@@ -338,8 +338,8 @@ function render() {
             animation.delta = animation.step;
         }
 
-        angle.leftArm += maxAngle.arm * animation.delta;
-        angle.rightArm -= maxAngle.arm * animation.delta;
+        angle.leftArm -= maxAngle.arm * animation.delta;
+        angle.rightArm += maxAngle.arm * animation.delta;
         angle.leftLeg += maxAngle.leg * animation.delta;
         angle.rightLeg -= maxAngle.leg * animation.delta;
     }
