@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Moon Rendering</title>
+    <link href="./style.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+    <div id="container">
+        <canvas id="canvas"></canvas>
+        <ul id="instructions">
+            <li>Use mouse, ctrl and shift to rotate, pan and zoom the moon.</li>
+            <li>Press l key to switch between headlight and distant light source.</li>
+            <li>Press spacebar to toggle the animation of the distant light source.</li>
+            <li>Press different num key to view different stage:</li>
+            <li><ul>
+                <li>Stage 0: A greyish sphere</li>
+                <li>Stage 1: Texture mapping</li>
+                <li>Stage 2: Normal mapping</li>
+                <li>Stage 3: Face mapping</li>
+            </ul></li>
+        </ul>
+    </div>
+</body>
+
+<script id="vertex-shader" src="./shaders/vert.glsl" type="x-shader/x-vertex"></script>
+<script id="fragment-shader" src="./shaders/frag.glsl" type="x-shader/x-fragment"></script>
+
+<script src="./scripts/twgl-full.js"></script>
+<script src="./scripts/trackball.js"></script>
+<script src="./scripts/matrixstack.js"></script>
+<script src="./scripts/app.js"></script>
+
+</html>
