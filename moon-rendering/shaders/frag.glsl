@@ -78,10 +78,10 @@ void main() {
     if (u_Stage == 3) { // Add my photo over default texture
         float widthHalf = u_FaceWidth / 2.0;
         float heightHalf = u_FaceHeight / 2.0;
-        if (v_TexCoord.x <= 0.5 + widthHalf && v_TexCoord.x >= 0.5 - widthHalf
+        if (v_TexCoord.x <= 0.75 + widthHalf && v_TexCoord.x >= 0.75 - widthHalf
             && v_TexCoord.y <= 0.5 + heightHalf && v_TexCoord.y >= 0.5 - heightHalf) // Render my photo
             gl_FragColor = gl_FragColor * texture2D(u_FaceMap,
-                vec2((v_TexCoord.x + widthHalf - 0.5) / u_FaceWidth, (v_TexCoord.y + heightHalf - 0.5) / u_FaceHeight));
+                vec2((v_TexCoord.x + widthHalf - 0.75) / u_FaceWidth, (v_TexCoord.y + heightHalf - 0.5) / u_FaceHeight));
         else
             gl_FragColor = gl_FragColor * texture2D(u_ColorMap, v_TexCoord);
     } else if (u_Stage >= 1) // Add texture

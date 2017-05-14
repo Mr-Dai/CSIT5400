@@ -327,7 +327,7 @@ function render() {
                 angle %= (2 * Math.PI);
                 position = [distance * Math.cos(angle), 0, -1 * distance * Math.sin(angle)]; 
             }
-            const lightEye = m4.multiply(viewMatrix, position.concat(1));
+            const lightEye = m4.multiply(viewMatrix, [...position, 1]);
             setupLight([0.1, 0.1, 0.1], [1, 1, 1], lightEye.slice(0, 3));
         }
     }
